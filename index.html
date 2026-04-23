@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Presensi Onsite Live</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>📸 Presensi Onsite Live</h1>
+    
+    <div class="form-group">
+      <label for="nama">Nama Lengkap</label>
+      <input type="text" id="nama" placeholder="Masukkan nama Anda" required autocomplete="off">
+    </div>
+    
+    <div class="form-group">
+      <label>Lokasi Anda</label>
+      <button id="getLocationBtn" class="btn-location">📍 Dapatkan Lokasi</button>
+      <div id="locationStatus" class="status">Belum mengambil lokasi</div>
+    </div>
+    
+    <div class="form-group">
+      <label>📷 Foto Selfie (Live Camera)</label>
+      <div class="camera-controls">
+        <button id="startCameraBtn" class="btn-start">▶️ Mulai Kamera</button>
+        <button id="stopCameraBtn" class="btn-stop" disabled>⏹️ Hentikan Kamera</button>
+      </div>
+      <div class="camera-wrapper" id="cameraWrapper" style="display: none;">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="canvas" style="display: none;"></canvas>
+        <button id="captureBtn" class="btn-capture">📸 Ambil Foto</button>
+      </div>
+      <div id="cameraStatus" class="status"></div>
+      <div id="photoPreview" class="photo-preview"></div>
+    </div>
+    
+    <button id="submitBtn" class="btn-submit" disabled>✅ Kirim Presensi</button>
+    <div id="result" class="result"></div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
