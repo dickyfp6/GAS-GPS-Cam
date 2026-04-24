@@ -1,65 +1,68 @@
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKj5KfcDCgOD-o-6-yrV2zlbUUqQmSgxAXFKqf4UvPg-VIo_Ybqni_MAF6vGoFMurM/exec";
+// GANTI INI DENGAN URL WEB APP KAMU
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKj5KfcDCgOD-o-6-yrV2zlbUUqQmSgxAXFKqf4UvPg-VIo_Ybqni_MAF6vGoFMurM/exec"; 
 
-let state = { lat: null, long: null, addr: "Mencari lokasi...", img: null, stream: null };
+let state = { lat: null, long: null, addr: "Mencari lokasi...", img: null };
 
-// 1. Inisialisasi: Izin & Data
-window.onload = async () => {
-  startTime();
-  fetchOrmawa();
-  initGPS();
-  initCamera();
+window.onload = () => {
+  updateTime();
+  setInterval(updateTime, 1000);
+  loadOrmawa();
+  startGPS();
+  startCamera();
 };
 
-async function fetchOrmawa() {
+async function loadOrmawa() {
   const select = document.getElementById('ormawa');
   try {
     const res = await fetch(APPS_SCRIPT_URL);
-    const list = await res.json();
+    const data = await res.json();
     select.innerHTML = '<option value="">-- Pilih ORMAWA --</option>';
-    list.forEach(item => {
-      const opt = document.createElement('option');
+    data.forEach(item => {
+      let opt = document.createElement('option');
       opt.value = opt.textContent = item;
       select.appendChild(opt);
     });
   } catch (e) {
-    select.innerHTML = '<option value="">Gagal memuat data</option>';
+    select.innerHTML = '<option value="">Gagal memuat ORMAWA</option>';
   }
 }
 
-function initGPS() {
+function startGPS() {
   navigator.geolocation.getCurrentPosition(async (p) => {
     state.lat = p.coords.latitude;
     state.long = p.coords.longitude;
     document.getElementById('overlayCoords').innerText = `Lat: ${state.lat.toFixed(5)} | Long: ${state.long.toFixed(5)}`;
     
-    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${state.lat}&lon=${state.long}`);
-    const d = await res.json();
-    state.addr = d.display_name.split(',').slice(0, 3).join(',');
-    document.getElementById('overlayAddress').innerText = state.addr;
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${state.lat}&lon=${state.long}`);
+      const d = await res.json();
+      state.addr = d.display_name.split(',').slice(0, 3).join(',');
+      document.getElementById('overlayAddress').innerText = state.addr;
+    } catch(e) { state.addr = "Lokasi terdeteksi"; }
     checkReady();
   }, null, { enableHighAccuracy: true });
 }
 
-async function initCamera() {
+async function startCamera() {
   try {
-    state.stream = await navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 1.777 } });
-    document.getElementById('video').srcObject = state.stream;
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 1.777 } });
+    document.getElementById('video').srcObject = stream;
     document.getElementById('statusMsg').innerText = "Sistem Siap ✅";
     checkReady();
   } catch (e) {
-    document.getElementById('statusMsg').innerText = "Kamera tidak terdeteksi!";
+    document.getElementById('statusMsg').innerText = "Kamera diblokir!";
   }
 }
 
 function checkReady() {
-  const isFilled = document.getElementById('nama').value && document.getElementById('ormawa').value;
-  document.getElementById('captureBtn').disabled = !(isFilled && state.lat);
+  const ready = document.getElementById('nama').value && document.getElementById('ormawa').value && state.lat;
+  document.getElementById('captureBtn').disabled = !ready;
 }
 
 document.getElementById('nama').oninput = checkReady;
 document.getElementById('ormawa').onchange = checkReady;
 
-// 2. Capture & Freeze
+// AMBIL FOTO (Tanpa Mirror)
 document.getElementById('captureBtn').onclick = () => {
   const v = document.getElementById('video');
   const c = document.getElementById('canvas');
@@ -68,18 +71,17 @@ document.getElementById('captureBtn').onclick = () => {
   c.width = v.videoWidth;
   c.height = v.videoHeight;
   
-  ctx.translate(c.width, 0); ctx.scale(-1, 1);
-  ctx.drawImage(v, 0, 0);
-  ctx.setTransform(1,0,0,1,0,0);
+  // Gambar normal tanpa mirror
+  ctx.drawImage(v, 0, 0, c.width, c.height);
   
-  // Watermark
+  // Tambah Watermark
   ctx.fillStyle = "rgba(0,0,0,0.6)";
-  ctx.fillRect(0, c.height - 100, c.width, 100);
+  ctx.fillRect(0, c.height - 110, c.width, 110);
   ctx.fillStyle = "white";
-  ctx.font = "bold 24px Arial";
-  ctx.fillText(state.addr, 20, c.height - 60);
-  ctx.font = "18px Arial";
-  ctx.fillText(`${document.getElementById('overlayCoords').innerText} | ${document.getElementById('overlayTime').innerText}`, 20, c.height - 25);
+  ctx.font = "bold 26px Arial";
+  ctx.fillText(state.addr, 25, c.height - 65);
+  ctx.font = "20px Arial";
+  ctx.fillText(`${document.getElementById('overlayCoords').innerText} | ${document.getElementById('overlayTime').innerText}`, 25, c.height - 30);
 
   state.img = c.toDataURL('image/jpeg', 0.8);
   v.style.display = 'none';
@@ -87,17 +89,14 @@ document.getElementById('captureBtn').onclick = () => {
   c.style.display = 'block';
   
   document.getElementById('captureBtn').style.display = 'none';
-  document.getElementById('postCaptureButtons').style.display = 'flex';
+  document.getElementById('postCapture').style.display = 'flex';
 };
 
-document.getElementById('retakeBtn').onclick = () => {
-  location.reload(); // Paling bersih untuk reset state
-};
+document.getElementById('retakeBtn').onclick = () => location.reload();
 
-// 3. Submit
 document.getElementById('submitBtn').onclick = async () => {
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true; btn.innerText = "Mengirim...";
+  const sBtn = document.getElementById('submitBtn');
+  sBtn.disabled = true; sBtn.innerText = "Mengirim...";
   
   const payload = {
     nama: document.getElementById('nama').value,
@@ -107,13 +106,13 @@ document.getElementById('submitBtn').onclick = async () => {
 
   await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
   
-  document.getElementById('result').innerHTML = "Presensi Berhasil! Halaman akan dimuat ulang...";
-  document.getElementById('result').className = "result-box success";
+  const resDiv = document.getElementById('result');
+  resDiv.style.display = 'block';
+  resDiv.className = 'result-box success';
+  resDiv.innerText = "Berhasil! Data telah tersimpan di Spreadsheet.";
   setTimeout(() => location.reload(), 3000);
 };
 
-function startTime() {
-  setInterval(() => {
-    document.getElementById('overlayTime').innerText = new Date().toLocaleTimeString('id-ID');
-  }, 1000);
+function updateTime() {
+  document.getElementById('overlayTime').innerText = new Date().toLocaleTimeString('id-ID') + " WIB";
 }

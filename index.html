@@ -3,53 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Laptop Presence System 16:9</title>
+  <title>Sistem Presensi Onsite 16:9</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>📸 Presensi Onsite Live</h1>
-      <p id="statusMsg">Menginisialisasi sistem...</p>
-    </div>
-    
-    <div class="main-layout">
-      <div class="camera-section">
-        <div class="camera-wrapper" id="cameraWrapper">
-          <video id="video" autoplay playsinline muted></video>
-          <canvas id="canvas" style="display: none;"></canvas>
-          <div id="liveOverlay" class="live-overlay">
-            <div id="overlayAddress">Mendeteksi lokasi...</div>
-            <div id="overlayMeta">
-              <span id="overlayCoords">Lat: - | Long: -</span> • <span id="overlayTime"></span>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="form-section">
-        <div class="form-group">
-          <label>Pilih ORMAWA</label>
-          <select id="ormawa">
-            <option value="">Memuat data...</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Nama Lengkap</label>
-          <input type="text" id="nama" placeholder="Ketik nama sesuai identitas">
-        </div>
-        
-        <div class="action-area">
-          <button id="captureBtn" class="btn-primary" disabled>📸 Ambil Foto</button>
-          <div id="postCaptureButtons" style="display: none; gap: 10px;">
-            <button id="retakeBtn" class="btn-secondary">🔄 Foto Ulang</button>
-            <button id="submitBtn" class="btn-success">✅ Kirim Data</button>
+<div class="container">
+  <h2 style="margin-top: 0;">📸 Presensi Onsite Live</h2>
+  <p id="statusMsg" style="font-size: 0.85rem; color: #666;">Menyiapkan kamera dan lokasi...</p>
+
+  <div class="main-layout">
+    <div class="camera-section">
+      <div class="camera-wrapper">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="canvas" style="display: none;"></canvas>
+        <div id="liveOverlay" class="live-overlay">
+          <div id="overlayAddress" style="font-weight: bold;">Mencari lokasi...</div>
+          <div id="overlayMeta" style="font-size: 0.75rem; margin-top: 4px;">
+            <span id="overlayCoords">Lat: - | Long: -</span> • <span id="overlayTime"></span>
           </div>
         </div>
-        <div id="result" class="result-box"></div>
       </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-group">
+        <label>Pilih ORMAWA</label>
+        <select id="ormawa">
+          <option value="">Memuat data...</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="nama" placeholder="Masukkan nama Anda">
+      </div>
+      
+      <div id="actionArea">
+        <button id="captureBtn" class="btn-primary" disabled>📸 Ambil Foto</button>
+        <div id="postCapture" style="display: none; gap: 10px; flex-direction: column;">
+          <button id="submitBtn" class="btn-success">✅ Kirim Data</button>
+          <button id="retakeBtn" class="btn-secondary">🔄 Foto Ulang</button>
+        </div>
+      </div>
+      
+      <div id="result" class="result-box" style="display: none;"></div>
     </div>
   </div>
-  <script src="script.js"></script>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
