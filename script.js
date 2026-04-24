@@ -1,166 +1,230 @@
-// Ganti dengan URL Web App Google Apps Script hasil deploy
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-mjXk9z6TCYSlN3P6elmwfaMLiA1kvvmKAD2cHz7uLhntn1x4GOxsks_II5f3XpRhcQ/exec"; // ⬅️ GANTI
+// GANTI DENGAN URL WEB APP DEPLOY KAMU
+const APPS_SCRIPT_URL = "URL_WEB_APP_KAMU_DISINI"; 
 
-let currentLocation = { lat: null, long: null };
+// Data State
+let currentLocation = { lat: null, long: null, address: "Mencari lokasi..." };
 let capturedPhoto = null;
 let videoStream = null;
 
 // DOM Elements
+const ormawaSelect = document.getElementById('ormawa');
 const namaInput = document.getElementById('nama');
-const getLocationBtn = document.getElementById('getLocationBtn');
-const locationStatus = document.getElementById('locationStatus');
-const startCameraBtn = document.getElementById('startCameraBtn');
-const stopCameraBtn = document.getElementById('stopCameraBtn');
-const cameraWrapper = document.getElementById('cameraWrapper');
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
+const liveOverlay = document.getElementById('liveOverlay');
+const overlayAddress = document.getElementById('overlayAddress');
+const overlayCoords = document.getElementById('overlayCoords');
+const overlayTime = document.getElementById('overlayTime');
+const statusMsg = document.getElementById('statusMsg');
+
 const captureBtn = document.getElementById('captureBtn');
-const cameraStatus = document.getElementById('cameraStatus');
-const photoPreview = document.getElementById('photoPreview');
+const retakeBtn = document.getElementById('retakeBtn');
 const submitBtn = document.getElementById('submitBtn');
 const resultDiv = document.getElementById('result');
 
-// Fungsi mulai kamera
-async function startCamera() {
-  cameraStatus.innerText = 'Meminta akses kamera...';
-  cameraStatus.style.background = '#f1f5f9';
-  try {
-    const constraints = { video: { facingMode: "user" } };
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    videoStream = stream;
-    video.srcObject = stream;
-    cameraWrapper.style.display = 'block';
-    startCameraBtn.disabled = true;
-    stopCameraBtn.disabled = false;
-    cameraStatus.innerText = '✅ Kamera aktif. Silakan ambil foto.';
-    cameraStatus.style.background = '#d4edda';
-  } catch (err) {
-    console.error(err);
-    let errorMsg = err.message;
-    if (err.name === 'NotAllowedError') errorMsg = 'Izin kamera ditolak. Periksa pengaturan browser.';
-    if (err.name === 'NotFoundError') errorMsg = 'Tidak ada kamera terdeteksi.';
-    cameraStatus.innerText = 'Gagal: ' + errorMsg;
-    cameraStatus.style.background = '#f8d7da';
-    startCameraBtn.disabled = false;
-    stopCameraBtn.disabled = true;
-  }
-}
+// 1. Inisialisasi Data Ormawa (seperti sebelumnya)
+const daftarOrmawa = [
+  "BEM ITS", "BLM ITS", "HIMASIKA - Fisika", "HIMATIKA - Matematika", "HMTC - Teknik Informatika",
+  "HMTI - Teknik Sistem dan Industri", "HMTL - Teknik Lingkungan", "HIMAGE - Teknik Geomatika",
+  "HIMATEKKOM - Teknik Komputer", "HMSI - Sistem Informasi", "Lainnya" // Tambahkan sisa data ormawa di sini
+];
 
-// Fungsi hentikan kamera
-function stopCamera() {
-  if (videoStream) {
-    videoStream.getTracks().forEach(track => track.stop());
-    videoStream = null;
-    video.srcObject = null;
-  }
-  cameraWrapper.style.display = 'none';
-  startCameraBtn.disabled = false;
-  stopCameraBtn.disabled = true;
-  cameraStatus.innerText = 'Kamera dihentikan.';
-  cameraStatus.style.background = '#f1f5f9';
-}
-
-// Event kamera
-startCameraBtn.addEventListener('click', startCamera);
-stopCameraBtn.addEventListener('click', stopCamera);
-
-// Ambil foto
-captureBtn.addEventListener('click', () => {
-  if (!videoStream || !video.videoWidth || !video.videoHeight) {
-    cameraStatus.innerText = 'Kamera belum aktif atau belum siap.';
-    return;
-  }
-  const context = canvas.getContext('2d');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  // Mirroring
-  context.translate(canvas.width, 0);
-  context.scale(-1, 1);
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  context.setTransform(1, 0, 0, 1, 0, 0);
-  const imgData = canvas.toDataURL('image/jpeg', 0.8);
-  capturedPhoto = imgData;
-  photoPreview.innerHTML = `<img src="${imgData}" alt="Foto selfie">`;
-  cameraStatus.innerText = '✅ Foto berhasil diambil.';
-  checkFormComplete();
+daftarOrmawa.forEach(ormawa => {
+  const option = document.createElement('option');
+  option.value = ormawa;
+  option.textContent = ormawa;
+  ormawaSelect.appendChild(option);
 });
 
-// Lokasi
-getLocationBtn.addEventListener('click', () => {
+// 2. Fungsi Auto-Run saat halaman dimuat
+window.addEventListener('DOMContentLoaded', async () => {
+  updateClock();
+  setInterval(updateClock, 1000);
+  
+  // Minta Lokasi
+  initLocation();
+  // Minta Kamera
+  await initCamera();
+});
+
+function updateClock() {
+  const now = new Date();
+  overlayTime.innerText = now.toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'medium' }) + " WIB";
+}
+
+function initLocation() {
   if (!navigator.geolocation) {
-    locationStatus.innerText = 'Geolokasi tidak didukung browser ini.';
+    statusMsg.innerText = "Browser tidak mendukung GPS.";
     return;
   }
-  locationStatus.innerText = 'Mengambil lokasi...';
   navigator.geolocation.getCurrentPosition(
-    (pos) => {
+    async (pos) => {
       currentLocation.lat = pos.coords.latitude;
       currentLocation.long = pos.coords.longitude;
-      locationStatus.innerHTML = `✅ Lokasi: ${currentLocation.lat.toFixed(6)}, ${currentLocation.long.toFixed(6)}`;
-      checkFormComplete();
+      overlayCoords.innerText = `Lat: ${currentLocation.lat.toFixed(6)} | Long: ${currentLocation.long.toFixed(6)}`;
+      statusMsg.innerText = "Lokasi ditemukan ✅";
+      
+      // Ambil alamat dari OpenStreetMap API (Gratis)
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${currentLocation.lat}&lon=${currentLocation.long}&zoom=18&addressdetails=1`);
+        const data = await res.json();
+        if (data && data.display_name) {
+          // Potong agar tidak terlalu panjang
+          const addrParts = data.display_name.split(",").slice(0, 4);
+          currentLocation.address = addrParts.join(",").trim();
+        } else {
+          currentLocation.address = "Detail jalan tidak ditemukan";
+        }
+      } catch (e) {
+        currentLocation.address = "Gagal memuat nama jalan";
+      }
+      overlayAddress.innerText = currentLocation.address;
+      checkFormComplete(); // Validasi tombol capture
     },
     (err) => {
-      locationStatus.innerText = 'Gagal ambil lokasi: ' + err.message;
-    }
+      statusMsg.innerText = "Gagal ambil lokasi. Pastikan GPS aktif/diizinkan.";
+      overlayAddress.innerText = "Lokasi tidak diizinkan!";
+    },
+    { enableHighAccuracy: true }
   );
-});
-
-// Cek kelengkapan form
-function checkFormComplete() {
-  const namaValid = namaInput.value.trim() !== '';
-  const locationValid = currentLocation.lat !== null && currentLocation.long !== null;
-  const photoValid = capturedPhoto !== null;
-  submitBtn.disabled = !(namaValid && locationValid && photoValid);
 }
 
+async function initCamera() {
+  try {
+    const constraints = { video: { facingMode: "user" } };
+    videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = videoStream;
+    statusMsg.innerText = "Kamera & Lokasi siap digunakan ✅";
+    checkFormComplete();
+  } catch (err) {
+    statusMsg.innerText = "Kamera diblokir atau tidak ditemukan.";
+  }
+}
+
+// 3. Validasi: Tombol "Ambil Foto" baru aktif kalau Lokasi & Form terisi
+function checkFormComplete() {
+  const isFormFilled = namaInput.value.trim() !== '' && ormawaSelect.value !== '';
+  const isLocationReady = currentLocation.lat !== null;
+  const isCameraReady = videoStream !== null;
+  
+  if (isFormFilled && isLocationReady && isCameraReady) {
+    captureBtn.disabled = false;
+  } else {
+    captureBtn.disabled = true;
+  }
+}
+
+ormawaSelect.addEventListener('change', checkFormComplete);
 namaInput.addEventListener('input', checkFormComplete);
 
-// Kirim presensi ke Apps Script
+// 4. Aksi Ambil Foto (Freeze & Draw Watermark)
+captureBtn.addEventListener('click', () => {
+  const ctx = canvas.getContext('2d');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  
+  // Menggambar video ke canvas (Di-mirror karena kamera depan)
+  ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+  // Reset transform agar tulisan teks tidak terbalik (mirror)
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  
+  // Menggambar Frame/Watermark Hitam Transparan di bagian bawah
+  const rectHeight = 120;
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+  ctx.fillRect(0, canvas.height - rectHeight, canvas.width, rectHeight);
+  
+  // Menggambar Teks Alamat, Koordinat, & Waktu
+  ctx.fillStyle = 'white';
+  
+  // Responsive font size
+  const fontSizeAddress = Math.max(14, canvas.width * 0.03); 
+  const fontSizeSmall = Math.max(12, canvas.width * 0.025);
+  
+  // Gambar Alamat
+  ctx.font = `bold ${fontSizeAddress}px sans-serif`;
+  ctx.fillText(currentLocation.address, 15, canvas.height - rectHeight + 35, canvas.width - 30);
+  
+  // Gambar Koordinat
+  ctx.font = `${fontSizeSmall}px sans-serif`;
+  ctx.fillText(`Lat: ${currentLocation.lat.toFixed(6)} | Long: ${currentLocation.long.toFixed(6)}`, 15, canvas.height - rectHeight + 65);
+  
+  // Gambar Waktu
+  ctx.fillText(overlayTime.innerText, 15, canvas.height - rectHeight + 90);
+
+  // Simpan hasil base64
+  capturedPhoto = canvas.toDataURL('image/jpeg', 0.8);
+  
+  // Sembunyikan Video & Live Overlay, Tampilkan Canvas (Efek Freeze)
+  video.style.display = 'none';
+  liveOverlay.style.display = 'none';
+  canvas.style.display = 'block';
+  
+  // Atur Tombol
+  captureBtn.style.display = 'none';
+  retakeBtn.style.display = 'block';
+  submitBtn.style.display = 'block';
+});
+
+// 5. Aksi Ulangi Foto (Unfreeze)
+retakeBtn.addEventListener('click', () => {
+  capturedPhoto = null;
+  video.style.display = 'block';
+  liveOverlay.style.display = 'block';
+  canvas.style.display = 'none';
+  
+  captureBtn.style.display = 'block';
+  retakeBtn.style.display = 'none';
+  submitBtn.style.display = 'none';
+  resultDiv.className = 'result';
+  resultDiv.innerHTML = '';
+});
+
+// 6. Kirim Data
 submitBtn.addEventListener('click', async () => {
-  if (submitBtn.disabled) return;
   submitBtn.disabled = true;
   submitBtn.innerText = 'Menyimpan...';
-  resultDiv.innerHTML = '';
+  retakeBtn.disabled = true;
   
   const payload = {
     nama: namaInput.value.trim(),
+    ormawa: ormawaSelect.value,
     lat: currentLocation.lat,
     long: currentLocation.long,
+    address: currentLocation.address,
     image: capturedPhoto
   };
   
   try {
-    const response = await fetch(APPS_SCRIPT_URL, {
+    // Pakai no-cors agar tidak bentrok dengan kebijakan CORS Apps Script
+    await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors', // Penting untuk Apps Script, meski response terbatas
+      mode: 'no-cors', 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    // Karena mode 'no-cors', kita tidak bisa baca response body.
-    // Tapi Apps Script tetap akan memproses. Kita kasih pesan sukses asumsi.
-    resultDiv.innerHTML = "Presensi terkirim! (Cek spreadsheet) ✅";
+    
+    resultDiv.innerHTML = "Presensi Berhasil Dikirim! ✅";
     resultDiv.className = 'result success';
-    // Reset form
-    stopCamera();
-    capturedPhoto = null;
-    photoPreview.innerHTML = '';
-    currentLocation = { lat: null, long: null };
-    locationStatus.innerText = 'Belum mengambil lokasi';
-    namaInput.value = '';
-    checkFormComplete();
-    submitBtn.innerText = '✅ Kirim Presensi';
+    
+    // Reset Form Otomatis setelah sukses
+    setTimeout(() => {
+      namaInput.value = '';
+      ormawaSelect.value = '';
+      retakeBtn.click(); // Panggil fungsi retake untuk unfreeze kamera
+      submitBtn.innerText = '✅ Kirim Presensi';
+      submitBtn.disabled = false;
+      retakeBtn.disabled = false;
+      checkFormComplete();
+    }, 2500);
+
   } catch (err) {
-    console.error(err);
-    resultDiv.innerHTML = 'Error: ' + err.message;
+    resultDiv.innerHTML = 'Gagal mengirim: ' + err.message;
     resultDiv.className = 'result error';
     submitBtn.disabled = false;
+    retakeBtn.disabled = false;
     submitBtn.innerText = '✅ Kirim Presensi';
-  }
-});
-
-// Bersihkan kamera saat halaman ditutup
-window.addEventListener('beforeunload', () => {
-  if (videoStream) {
-    videoStream.getTracks().forEach(track => track.stop());
   }
 });
