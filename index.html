@@ -2,48 +2,54 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Presensi Onsite Live</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laptop Presence System 16:9</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>📸 Presensi Onsite</h1>
-    
-    <div class="form-group">
-      <select id="ormawa" required>
-        <option value="" disabled selected>Pilih ORMAWA Anda...</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-      <input type="text" id="nama" placeholder="Masukkan Nama Lengkap" required autocomplete="off">
+    <div class="header">
+      <h1>📸 Presensi Onsite Live</h1>
+      <p id="statusMsg">Menginisialisasi sistem...</p>
     </div>
     
-    <div class="camera-section">
-      <div class="camera-wrapper" id="cameraWrapper">
-        <video id="video" autoplay playsinline muted></video>
-        <canvas id="canvas" style="display: none;"></canvas>
-        
-        <div id="liveOverlay" class="live-overlay">
-          <div class="overlay-text" id="overlayAddress">Mencari lokasi... pastikan GPS aktif.</div>
-          <div class="overlay-text" id="overlayCoords">Lat: - | Long: -</div>
-          <div class="overlay-text" id="overlayTime"></div>
+    <div class="main-layout">
+      <div class="camera-section">
+        <div class="camera-wrapper" id="cameraWrapper">
+          <video id="video" autoplay playsinline muted></video>
+          <canvas id="canvas" style="display: none;"></canvas>
+          <div id="liveOverlay" class="live-overlay">
+            <div id="overlayAddress">Mendeteksi lokasi...</div>
+            <div id="overlayMeta">
+              <span id="overlayCoords">Lat: - | Long: -</span> • <span id="overlayTime"></span>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <div id="statusMsg" class="status-msg">Meminta izin kamera & lokasi...</div>
-      
-      <div class="action-buttons">
-        <button id="captureBtn" class="btn-capture" disabled>📸 Ambil Foto</button>
-        <button id="retakeBtn" class="btn-retake" style="display: none;">🔄 Ulangi</button>
-        <button id="submitBtn" class="btn-submit" style="display: none;">✅ Kirim Presensi</button>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label>Pilih ORMAWA</label>
+          <select id="ormawa">
+            <option value="">Memuat data...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="nama" placeholder="Ketik nama sesuai identitas">
+        </div>
+        
+        <div class="action-area">
+          <button id="captureBtn" class="btn-primary" disabled>📸 Ambil Foto</button>
+          <div id="postCaptureButtons" style="display: none; gap: 10px;">
+            <button id="retakeBtn" class="btn-secondary">🔄 Foto Ulang</button>
+            <button id="submitBtn" class="btn-success">✅ Kirim Data</button>
+          </div>
+        </div>
+        <div id="result" class="result-box"></div>
       </div>
     </div>
-    
-    <div id="result" class="result"></div>
   </div>
-  
   <script src="script.js"></script>
 </body>
 </html>
