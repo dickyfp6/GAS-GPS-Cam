@@ -3,6 +3,22 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKj5KfcDCgOD-o
 
 let state = { lat: null, long: null, addr: "Mencari lokasi...", img: null };
 
+function isLainnyaSelected() {
+  return document.getElementById('ormawa').value.trim().toLowerCase() === 'lainnya';
+}
+
+function getFinalOrmawaValue() {
+  if (isLainnyaSelected()) {
+    return document.getElementById('ormawaCustom').value.trim();
+  }
+  return document.getElementById('ormawa').value;
+}
+
+function toggleOrmawaCustomField() {
+  const customGroup = document.getElementById('ormawaCustomGroup');
+  customGroup.style.display = isLainnyaSelected() ? 'block' : 'none';
+}
+
 window.onload = () => {
   updateTime();
   setInterval(updateTime, 1000);
@@ -22,6 +38,13 @@ async function loadOrmawa() {
       opt.value = opt.textContent = item;
       select.appendChild(opt);
     });
+
+    const hasLainnya = data.some(item => String(item).trim().toLowerCase() === 'lainnya');
+    if (!hasLainnya) {
+      let otherOpt = document.createElement('option');
+      otherOpt.value = otherOpt.textContent = 'Lainnya';
+      select.appendChild(otherOpt);
+    }
   } catch (e) {
     select.innerHTML = '<option value="">Gagal memuat ORMAWA</option>';
   }
@@ -55,12 +78,16 @@ async function startCamera() {
 }
 
 function checkReady() {
-  const ready = document.getElementById('nama').value && document.getElementById('ormawa').value && state.lat;
+  const ready = document.getElementById('nama').value.trim() && getFinalOrmawaValue() && state.lat;
   document.getElementById('captureBtn').disabled = !ready;
 }
 
 document.getElementById('nama').oninput = checkReady;
-document.getElementById('ormawa').onchange = checkReady;
+document.getElementById('ormawa').onchange = () => {
+  toggleOrmawaCustomField();
+  checkReady();
+};
+document.getElementById('ormawaCustom').oninput = checkReady;
 
 // AMBIL FOTO (Tanpa Mirror)
 document.getElementById('captureBtn').onclick = () => {
@@ -100,7 +127,7 @@ document.getElementById('submitBtn').onclick = async () => {
   
   const payload = {
     nama: document.getElementById('nama').value,
-    ormawa: document.getElementById('ormawa').value,
+    ormawa: getFinalOrmawaValue(),
     lat: state.lat, long: state.long, address: state.addr, image: state.img
   };
 
