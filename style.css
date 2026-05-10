@@ -1,5 +1,5 @@
 body {
-  background: #f0f2f5;
+  background: linear-gradient(135deg, #1a0f0f 0%, #2d1010 50%, #1a0f0f 100%);
   margin: 0;
   display: flex;
   justify-content: center;
@@ -10,10 +10,11 @@ body {
 .container {
   width: 90%;
   max-width: 1000px;
-  background: white;
+  background: linear-gradient(180deg, #fff8f0 0%, #fffbf5 100%);
   padding: 30px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 50px rgba(220, 20, 60, 0.3), 0 0 30px rgba(212, 175, 55, 0.2);
+  border: 2px solid rgba(212, 175, 55, 0.3);
 }
 .main-layout {
   display: flex;
@@ -37,6 +38,8 @@ body {
   background: #000;
   border-radius: 12px;
   overflow: hidden;
+  border: 3px solid #D4AF37;
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
 }
 
 /* Video & Canvas TIDAK DI-MIRROR */
@@ -49,26 +52,47 @@ video, canvas {
 .live-overlay {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  background: rgba(0,0,0,0.6);
+  background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.3));
   color: #fff;
-  padding: 10px 15px;
+  padding: 15px;
   font-size: 0.85rem;
+  border-top: 2px solid #D4AF37;
 }
 
-.form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: #8B0000; }
 input, select {
-  width: 100%; padding: 12px; border: 1px solid #ddd;
-  border-radius: 8px; font-size: 1rem; outline: none; box-sizing: border-box;
+  width: 100%; padding: 12px; border: 2px solid #D4AF37;
+  border-radius: 8px; font-size: 1rem; outline: none; box-sizing: border-box; background: #fefdfb;
+  transition: 0.3s;
+}
+input:focus, select:focus {
+  border-color: #DC143C; box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
 }
 
 button {
   width: 100%; padding: 14px; border-radius: 10px; border: none;
   font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem;
 }
-.btn-primary { background: #3182ce; color: white; }
-.btn-success { background: #38a169; color: white; }
-.btn-secondary { background: #cbd5e0; color: #4a5568; }
-button:disabled { background: #edf2f7; color: #a0aec0; cursor: not-allowed; }
+.btn-primary { background: linear-gradient(135deg, #D4AF37 0%, #C4941F 100%); color: #1a0f0f; font-weight: bold; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
+.btn-primary:hover { background: linear-gradient(135deg, #E5C158 0%, #D4AF37 100%); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
+.btn-success { background: linear-gradient(135deg, #DC143C 0%, #B22222 100%); color: white; box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3); }
+.btn-success:hover { background: linear-gradient(135deg, #FF4444 0%, #DC143C 100%); box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5); }
+.btn-secondary { background: linear-gradient(135deg, #C4941F 0%, #8B6914 100%); color: white; box-shadow: 0 4px 15px rgba(196, 148, 31, 0.3); }
+.btn-secondary:hover { background: linear-gradient(135deg, #D4AF37 0%, #A0771F 100%); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4); }
+button:disabled { background: #e8dcc8; color: #9b8b6f; cursor: not-allowed; }
 
-.result-box { margin-top: 15px; text-align: center; font-weight: bold; padding: 10px; border-radius: 8px; }
-.success { background: #c6f6d5; color: #22543d; }
+.result-box { margin-top: 15px; text-align: center; font-weight: bold; padding: 15px; border-radius: 10px; border: 2px solid #D4AF37; }
+.success { background: linear-gradient(135deg, #fff8f0, #fffbf5); color: #8B0000; border-color: #DC143C; }
+
+.form-group {
+  background: rgba(212, 175, 55, 0.05);
+  padding: 12px;
+  border-radius: 10px;
+  border-left: 4px solid #D4AF37;
+  transition: 0.3s;
+}
+
+.form-group:hover {
+  background: rgba(212, 175, 55, 0.1);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
+}
