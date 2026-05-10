@@ -1,5 +1,5 @@
 body {
-  background: linear-gradient(135deg, #1a0f0f 0%, #2d1010 50%, #1a0f0f 100%);
+  background: #1a1a1a;
   margin: 0;
   display: flex;
   justify-content: center;
@@ -10,11 +10,11 @@ body {
 .container {
   width: 90%;
   max-width: 1000px;
-  background: linear-gradient(180deg, #fff8f0 0%, #fffbf5 100%);
+  background: #f5f1ed;
   padding: 30px;
   border-radius: 20px;
-  box-shadow: 0 15px 50px rgba(220, 20, 60, 0.3), 0 0 30px rgba(212, 175, 55, 0.2);
-  border: 2px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 0 15px 50px rgba(220, 20, 60, 0.2);
+  border: 2px solid #D4AF37;
 }
 .main-layout {
   display: flex;
@@ -73,16 +73,16 @@ button {
   width: 100%; padding: 14px; border-radius: 10px; border: none;
   font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem;
 }
-.btn-primary { background: linear-gradient(135deg, #D4AF37 0%, #C4941F 100%); color: #1a0f0f; font-weight: bold; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
-.btn-primary:hover { background: linear-gradient(135deg, #E5C158 0%, #D4AF37 100%); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
-.btn-success { background: linear-gradient(135deg, #DC143C 0%, #B22222 100%); color: white; box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3); }
-.btn-success:hover { background: linear-gradient(135deg, #FF4444 0%, #DC143C 100%); box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5); }
-.btn-secondary { background: linear-gradient(135deg, #C4941F 0%, #8B6914 100%); color: white; box-shadow: 0 4px 15px rgba(196, 148, 31, 0.3); }
-.btn-secondary:hover { background: linear-gradient(135deg, #D4AF37 0%, #A0771F 100%); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4); }
-button:disabled { background: #e8dcc8; color: #9b8b6f; cursor: not-allowed; }
+.btn-primary { background: #D4AF37; color: #1a0f0f; font-weight: bold; box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3); }
+.btn-primary:hover { background: #E5C158; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.5); }
+.btn-success { background: #8B0000; color: white; box-shadow: 0 2px 8px rgba(139, 0, 0, 0.3); }
+.btn-success:hover { background: #A01010; box-shadow: 0 4px 12px rgba(139, 0, 0, 0.5); }
+.btn-secondary { background: #B8860B; color: white; box-shadow: 0 2px 8px rgba(184, 134, 11, 0.3); }
+.btn-secondary:hover { background: #CD9B1D; box-shadow: 0 4px 12px rgba(184, 134, 11, 0.5); }
+button:disabled { background: #d0c8b8; color: #8a7a6a; cursor: not-allowed; }
 
-.result-box { margin-top: 15px; text-align: center; font-weight: bold; padding: 15px; border-radius: 10px; border: 2px solid #D4AF37; }
-.success { background: linear-gradient(135deg, #fff8f0, #fffbf5); color: #8B0000; border-color: #DC143C; }
+.result-box { margin-top: 15px; text-align: center; font-weight: bold; padding: 15px; border-radius: 10px; border: 2px solid #D4AF37; background: #f5f1ed; }
+.success { background: #f5f1ed; color: #8B0000; border-color: #8B0000; }
 
 .form-group {
   background: rgba(212, 175, 55, 0.05);
