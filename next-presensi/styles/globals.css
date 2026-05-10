@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom simple maroon & gold palette overrides for convenience */
+:root{
+  --maroon: #8B0000;
+  --gold: #D4AF37;
+}
+
+body { @apply bg-gray-900; }
+
+.btn-gold { background: var(--gold); color: #1a0f0f }
+.btn-maroon { background: var(--maroon); color: white }
+
+/* Minor resets to keep layout similar to original */
+.rounded-2xl { border-radius: 1rem }
