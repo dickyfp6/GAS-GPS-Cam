@@ -98,14 +98,23 @@ function getPresenceLogs(ss) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // Ambil data (Waktu, Nama, Ormawa, URL Foto)
   const data = sheet.getRange(2, 1, lastRow - 1, 4).getValues();
   
   const result = data.map(row => {
+    let waktuStr = "??:??";
+    try {
+      const d = row[0] instanceof Date ? row[0] : new Date(row[0]);
+      if (!isNaN(d.getTime())) {
+        waktuStr = Utilities.formatDate(d, "GMT+7", "HH:mm");
+      }
+    } catch (e) {}
+
     return {
-      waktu: row[0] instanceof Date ? Utilities.formatDate(row[0], "GMT+7", "HH:mm") : "??:??",
-      nama: row[1],
-      ormawa: row[2],
-      foto: row[3]
+      waktu: waktuStr,
+      nama: normalizeText(row[1]) || "-",
+      ormawa: normalizeText(row[2]) || "-",
+      foto: row[3] || "#"
     };
   }).reverse();
 
