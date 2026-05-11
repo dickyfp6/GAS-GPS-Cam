@@ -156,8 +156,7 @@ body {
     align-items: stretch;
     background: rgba(255, 255, 255, 0.95);
     transition: opacity 0.3s ease;
-    max-height: 750px; /* Limit height to match typical main panel height */
-    height: fit-content;
+    max-height: 520px; /* Constrained to show approx 10 rows */
     align-self: start;
     overflow: hidden;
 }
@@ -185,6 +184,31 @@ body {
     flex: 1;
     overflow-x: auto;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s;
+}
+
+.logs-container:hover {
+    scrollbar-color: var(--border-color) transparent;
+}
+
+.logs-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.logs-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.logs-container::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 10px;
+    transition: background 0.3s;
+}
+
+.logs-container:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
 }
 
 .log-table {
