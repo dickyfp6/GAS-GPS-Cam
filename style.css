@@ -119,16 +119,17 @@ body {
 /* ============ Main Content ============ */
 .main-content {
     width: 100%;
-    max-width: 1100px;
+    max-width: 1200px;
     position: relative;
     z-index: 2;
 }
 
 .content-wrapper {
     display: grid;
-    grid-template-columns: 2.5fr 1fr;
+    grid-template-columns: 2fr 1.2fr;
     gap: 1.25rem;
     width: 100%;
+    max-height: 85vh; /* Limit height of the whole dashboard area */
 }
 
 .header-section {
@@ -155,6 +156,8 @@ body {
     align-items: stretch;
     background: rgba(255, 255, 255, 0.95);
     transition: opacity 0.3s ease;
+    max-height: 100%; /* Match height of main panel */
+    overflow: hidden;
 }
 
 .log-header {
@@ -178,7 +181,7 @@ body {
 
 .logs-container {
     flex: 1;
-    overflow-x: hidden;
+    overflow-x: auto;
     overflow-y: auto;
 }
 
@@ -206,23 +209,23 @@ body {
 .col-ormawa {
     font-weight: 700;
     color: var(--primary-color);
-    max-width: 60px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-width: 100px;
 }
 
 .col-nama {
     font-weight: 600;
-    max-width: 80px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-width: 120px;
 }
 
 .col-waktu {
     color: var(--text-secondary);
     font-size: 0.7rem;
+    width: 50px;
+}
+
+.col-foto {
+    width: 40px;
+    text-align: center;
 }
 
 .btn-table-view {

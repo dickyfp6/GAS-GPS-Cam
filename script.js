@@ -179,7 +179,7 @@ async function loadPresenceLogs() {
         <td class="col-ormawa">${log.ormawa || '-'}</td>
         <td class="col-nama">${log.nama || '-'}</td>
         <td class="col-waktu">${log.waktu || '??:??'}</td>
-        <td>
+        <td class="col-foto">
           <button class="btn-table-view" onclick="window.open('${log.foto}', '_blank')" title="Lihat Foto">📸</button>
         </td>
       </tr>
