@@ -9,7 +9,7 @@ class ButterflyGenerator {
         this.container = document.querySelector(containerSelector);
         this.butterflyEmojis = ['🦋', '🦋'];
         this.activeButterflies = 0;
-        this.maxButterflies = 8;
+        this.maxButterflies = 60; // Dibuat lebih rame
     }
 
     createButterfly() {
@@ -17,18 +17,51 @@ class ButterflyGenerator {
 
         const butterfly = document.createElement('div');
         butterfly.className = 'butterfly';
-        butterfly.textContent = this.butterflyEmojis[Math.floor(Math.random() * this.butterflyEmojis.length)];
+        
+        const butterflyIcon = document.createElement('span');
+        butterflyIcon.className = 'butterfly-icon';
+        butterflyIcon.textContent = this.butterflyEmojis[Math.floor(Math.random() * this.butterflyEmojis.length)];
+        
+        // Ukuran random banget: super kecil sampai lumayan besar
+        const scale = 0.3 + Math.random() * 2.2; 
+        butterflyIcon.style.transform = `scale(${scale})`;
 
-        const startX = Math.random() * 100;
-        const startY = Math.random() * -50;
-        const duration = 15 + Math.random() * 10;
+        butterfly.appendChild(butterflyIcon);
+
+        // Muncul bisa dari atas, kiri, kanan, atau bawah
+        let startX, startY;
+        const side = Math.floor(Math.random() * 4);
+        if(side === 0) { startX = Math.random() * 100; startY = -15; } // Atas
+        else if(side === 1) { startX = 115; startY = Math.random() * 100; } // Kanan
+        else if(side === 2) { startX = Math.random() * 100; startY = 115; } // Bawah
+        else { startX = -15; startY = Math.random() * 100; } // Kiri
+
+        // Tujuan nyebrang layar melewati box di tengah
+        const endX = (Math.random() * 120 - 10) + 'vw'; 
+        const endY = (Math.random() * 120 - 10) + 'vh';
+        // Kunci lintasan tengah (30vw-70vw, 30vh-70vh) biar sering lewat box presensi
+        const midPx = (30 + Math.random() * 40) + 'vw';
+        const midPy = (30 + Math.random() * 40) + 'vh';
+        
+        const rotMid = (Math.random() * 90 - 45) + 'deg';
+        const rotEnd = (Math.random() * 180 - 90) + 'deg';
+
+        // Kecepatan sangat random: ada yg pelan (25s), ada yang ngebut banget (4s)
+        const duration = 4 + Math.random() * 21;
 
         butterfly.style.cssText = `
-            left: ${startX}vw;
-            top: ${startY}vh;
-            animation: floatButter ${duration}s linear forwards;
-            animation-delay: 0s;
-            opacity: ${0.6 + Math.random() * 0.3};
+            left: 0;
+            top: 0;
+            --startX: ${startX}vw;
+            --startY: ${startY}vh;
+            --endX: ${endX};
+            --endY: ${endY};
+            --midPx: ${midPx};
+            --midPy: ${midPy};
+            --rotMid: ${rotMid};
+            --rotEnd: ${rotEnd};
+            animation: flyCrazy ${duration}s ease-in-out both; 
+            animation-delay: ${Math.random() * 2}s;
         `;
 
         this.container.appendChild(butterfly);
@@ -37,10 +70,10 @@ class ButterflyGenerator {
         setTimeout(() => {
             butterfly.remove();
             this.activeButterflies--;
-        }, duration * 1000);
+        }, duration * 1000 + 2000);
     }
 
-    startAnimation(interval = 3000) {
+    startAnimation(interval = 400) { // Spawn lebih cepat & frequent
         this.animationInterval = setInterval(() => {
             this.createButterfly();
         }, interval);
@@ -79,12 +112,12 @@ function getFinalOrmawaValue() {
 function toggleOrmawaCustomField() {
   const customGroup = document.getElementById('ormawaCustomGroup');
   customGroup.style.display = isLainnyaSelected() ? 'block' : 'none';
-}
+}8
 
 window.onload = () => {
   // Initialize butterfly animation
   const butterflyGen = new ButterflyGenerator('.butterfly-container');
-  butterflyGen.startAnimation(2500);
+  butterflyGen.startAnimation(300);
 
   // Add ripple effect to buttons
   document.querySelectorAll('button').forEach(btn => {
@@ -107,9 +140,58 @@ window.onload = () => {
   updateTime();
   setInterval(updateTime, 1000);
   loadOrmawa();
+  loadPresenceLogs();
   startGPS();
   startCamera();
 };
+
+async function loadPresenceLogs() {
+  const container = document.getElementById('presenceLogs');
+  const sidePanel = document.querySelector('.side-panel');
+  try {
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=getLogs`);
+    const logs = await res.json();
+    
+    if (!logs || logs.length === 0) {
+      sidePanel.style.visibility = 'hidden';
+      sidePanel.style.opacity = '0';
+      return;
+    }
+    
+    sidePanel.style.visibility = 'visible';
+    sidePanel.style.opacity = '1';
+    
+    let html = `
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>ORMAWA</th>
+            <th>NAMA</th>
+            <th>JAM</th>
+            <th>FOTO</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    
+    html += logs.map(log => `
+      <tr>
+        <td class="col-ormawa">${log.ormawa || '-'}</td>
+        <td class="col-nama">${log.nama || '-'}</td>
+        <td class="col-waktu">${log.waktu || '??:??'}</td>
+        <td>
+          <button class="btn-table-view" onclick="window.open('${log.foto}', '_blank')" title="Lihat Foto">📸</button>
+        </td>
+      </tr>
+    `).join('');
+    
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+  } catch (e) {
+    sidePanel.style.visibility = 'hidden';
+    sidePanel.style.opacity = '0';
+  }
+}
 
 async function loadOrmawa() {
   const select = document.getElementById('ormawa');
@@ -154,10 +236,10 @@ async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 1.777 } });
     document.getElementById('video').srcObject = stream;
-    document.getElementById('statusMsg').innerText = "Sistem Siap ✅";
+    document.getElementById('statusMsg').innerText = "📸 AYO PRES FOTO PRESENSI DULU DI SINI!";
     checkReady();
   } catch (e) {
-    document.getElementById('statusMsg').innerText = "Kamera diblokir!";
+    document.getElementById('statusMsg').innerText = "⚠️ Kamera diblokir!";
   }
 }
 
@@ -221,6 +303,7 @@ document.getElementById('submitBtn').onclick = async () => {
   resDiv.style.display = 'block';
   resDiv.className = 'result-box success';
   resDiv.innerText = "Berhasil! Data telah tersimpan di Spreadsheet.";
+  loadPresenceLogs(); // Refresh logs immediately
   setTimeout(() => location.reload(), 3000);
 };
 

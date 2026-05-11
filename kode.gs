@@ -34,8 +34,18 @@ function addOrmawaIfNew(ss, ormawaName) {
   }
 }
 
-function doGet() {
+function doGet(e) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const action = e && e.parameter && e.parameter.action ? e.parameter.action : "";
+
+  if (action === "getLogs") {
+    return getPresenceLogs(ss);
+  }
+  
+  return getOrmawaList(ss);
+}
+
+function getOrmawaList(ss) {
   const sheetOrmawa = ss.getSheetByName("ORMAWA");
   const sheetPresensi = ss.getSheetByName("Presensi");
 
@@ -61,19 +71,45 @@ function doGet() {
       .filter(Boolean);
   }
 
-  // Keep "Lainnya" always visible so users can input custom ORMAWA names.
   const daftarTersedia = dataOrmawa.filter(function(item) {
     const itemKey = normalizeKey(item);
     if (itemKey === "lainnya") return true;
     return !ormawaSudahHadir.includes(itemKey);
   });
 
-  // Ensure "Lainnya" exists even if not present in ORMAWA sheet.
   if (!daftarTersedia.some(function(item) { return normalizeKey(item) === "lainnya"; })) {
     daftarTersedia.push("Lainnya");
   }
 
   return ContentService.createTextOutput(JSON.stringify(daftarTersedia))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getPresenceLogs(ss) {
+  const sheet = ss.getSheetByName("Presensi");
+  if (!sheet) {
+    return ContentService.createTextOutput(JSON.stringify([]))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) {
+    return ContentService.createTextOutput(JSON.stringify([]))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  const data = sheet.getRange(2, 1, lastRow - 1, 4).getValues();
+  
+  const result = data.map(row => {
+    return {
+      waktu: row[0] instanceof Date ? Utilities.formatDate(row[0], "GMT+7", "HH:mm") : "??:??",
+      nama: row[1],
+      ormawa: row[2],
+      foto: row[3]
+    };
+  }).reverse();
+
+  return ContentService.createTextOutput(JSON.stringify(result))
     .setMimeType(ContentService.MimeType.JSON);
 }
 

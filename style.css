@@ -26,7 +26,8 @@ html {
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-primary);
+    background: linear-gradient(135deg, #a31621 0%, #2e0004 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
@@ -36,31 +37,29 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 1rem;
+    padding-top: 7.5rem;
 }
 
-/* ============ Logo Header ============ */
-.logo-header {
-    width: 100%;
-    padding: 1.5rem 1rem;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
+/* ============ Logo Overlay ============ */
+.logo-overlay {
+    position: fixed;
+    top: 1.5rem;
+    left: 0;
+    right: 0;
+    z-index: 50;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.logo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 900px;
+    padding: 0.5rem 1rem;
+    background: transparent;
 }
 
 .logo-image {
     max-width: 100%;
     height: auto;
-    max-height: 120px;
+    max-height: 60px;
     object-fit: contain;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
 }
 
 /* ============ Butterfly Animation ============ */
@@ -69,19 +68,22 @@ body {
     50% { transform: translateY(-20px) rotate(5deg); }
 }
 
-@keyframes floatButter {
+@keyframes flyCrazy {
     0% {
-        transform: translateX(-10vw) translateY(0);
+        transform: translate(var(--startX), var(--startY)) scale(1) rotate(0deg);
         opacity: 0;
     }
-    10% {
+    15% {
         opacity: 1;
     }
-    90% {
+    50% {
+        transform: translate(var(--midPx), var(--midPy)) scale(1.1) rotate(var(--rotMid));
+    }
+    85% {
         opacity: 1;
     }
     100% {
-        transform: translateX(110vw) translateY(100vh);
+        transform: translate(var(--endX), var(--endY)) scale(0.9) rotate(var(--rotEnd));
         opacity: 0;
     }
 }
@@ -99,32 +101,151 @@ body {
 
 .butterfly {
     position: absolute;
-    width: 30px;
-    height: 30px;
-    opacity: 0.7;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+    opacity: 0; /* Sembunyikan sebelum animasi mulai */
 }
 
-.butterfly::before {
-    content: '🦋';
-    position: absolute;
+.butterfly-icon {
+    display: inline-block;
     font-size: 30px;
-    animation: flutter 0.6s ease-in-out infinite;
+    animation: flap-emoji 0.15s ease-in-out infinite alternate;
+}
+
+@keyframes flap-emoji {
+    0% { transform: scaleX(1) translateY(0) rotateZ(10deg); }
+    100% { transform: scaleX(0.2) translateY(-2px) rotateZ(-10deg); }
 }
 
 /* ============ Main Content ============ */
 .main-content {
     width: 100%;
-    max-width: 1000px;
+    max-width: 1100px;
     position: relative;
     z-index: 2;
 }
 
+.content-wrapper {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    gap: 1.25rem;
+    width: 100%;
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.camera-panel, .form-panel, .header-panel {
+    display: none; 
+}
+
+.main-app-panel {
+    grid-column: 1 / 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.side-panel {
+    grid-column: 2 / 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    background: rgba(255, 255, 255, 0.95);
+    transition: opacity 0.3s ease;
+}
+
+.log-header {
+    margin-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.side-title {
+    font-size: 1rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    margin: 0;
+}
+
+.side-subtitle {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-top: 1px;
+}
+
+.logs-container {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+}
+
+.log-table th {
+    text-align: left;
+    padding: 0.5rem 0.25rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 0.65rem;
+}
+
+.log-table td {
+    padding: 0.6rem 0.25rem;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.col-ormawa {
+    font-weight: 700;
+    color: var(--primary-color);
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-nama {
+    font-weight: 600;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-waktu {
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+}
+
+.btn-table-view {
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 2px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.btn-table-view:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
 /* ============ Container ============ */
 .container {
-    background: var(--bg-secondary);
+    background: rgba(255, 255, 255, 0.92);
     border-radius: 12px;
     border: 1px solid var(--border-color);
-    padding: 2rem;
+    padding: 1.25rem 1.75rem;
     box-shadow: var(--shadow-medium);
 }
 
@@ -137,35 +258,46 @@ body {
 }
 
 .status-msg {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+    font-size: 1.3rem; /* Membesar layaknya sub-heading */
+    color: var(--text-primary);
     text-align: center;
-    font-weight: 500;
+    font-weight: 700;
     margin-bottom: 1.5rem;
-}
-
-/* ============ Main Layout ============ */
-.main-layout {
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-}
-
-.camera-section {
-    flex: 1.8;
+    letter-spacing: 0.5px;
 }
 
 .form-section {
-    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.form-inputs-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.form-inputs-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.form-inputs-row .form-group {
+    flex: 1 1 calc(50% - 1rem);
+    min-width: 200px;
 }
 
 /* ============ Camera ============ */
 .camera-wrapper {
     position: relative;
     width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
     aspect-ratio: 16 / 9;
     background: #000;
     border-radius: 8px;
@@ -254,14 +386,17 @@ button {
 }
 
 .btn-primary {
-    background: #8b4513;
-    color: white;
-    box-shadow: var(--shadow-light);
+    background: linear-gradient(135deg, #f9df9f 0%, #d4af37 50%, #ba9520 100%);
+    color: #2e0004; /* Text warna maroon sangat gelap agar kontras & mewah */
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+    border: 1px solid #d4af37;
 }
 
 .btn-primary:hover:not(:disabled) {
-    background: #a0522d;
-    box-shadow: var(--shadow-medium);
+    background: linear-gradient(135deg, #fcebae 0%, #e6c27a 50%, #cba734 100%);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
+    transform: translateY(-1px);
 }
 
 .btn-success {
@@ -276,13 +411,13 @@ button {
 }
 
 .btn-secondary {
-    background: var(--warning-color);
+    background: #717171; /* Warna abu-abu */
     color: white;
     box-shadow: var(--shadow-light);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: #f57c00;
+    background: #5a5a5a; /* Hover abu-abu gelap */
     box-shadow: var(--shadow-medium);
 }
 
@@ -325,9 +460,16 @@ button:disabled {
 
 /* ============ Responsive Design ============ */
 @media (max-width: 1024px) {
-    .main-layout {
-        flex-direction: column;
-        gap: 1.5rem;
+    .content-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-panel, .main-app-panel, .side-panel {
+        grid-column: 1 / -1;
+    }
+
+    .side-panel {
+        min-height: 100px;
     }
 }
 
