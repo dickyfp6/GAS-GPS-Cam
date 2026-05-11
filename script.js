@@ -259,48 +259,73 @@ document.getElementById('captureBtn').onclick = () => {
   const v = document.getElementById('video');
   const c = document.getElementById('canvas');
   const ctx = c.getContext('2d');
-  
+
   c.width = v.videoWidth;
   c.height = v.videoHeight;
-  
-  // Un-mirror untuk hasil normal (video CSS sudah di-mirror)
+
+  // Draw mirrored preview into canvas but reset transform afterwards
+  ctx.save();
   ctx.translate(c.width, 0);
   ctx.scale(-1, 1);
   ctx.drawImage(v, 0, 0, c.width, c.height);
-  ctx.translate(c.width, 0);
-  ctx.scale(-1, 1);
-  
-  // Tambah Watermark
+  ctx.restore();
+
+  // Tambah Watermark background (sedikit padding kanan/ kiri)
+  const wmHeight = 110;
   ctx.fillStyle = "rgba(0,0,0,0.6)";
-  ctx.fillRect(0, c.height - 110, c.width, 110);
-  
-  // Watermark kiri - Lokasi
+  ctx.fillRect(0, c.height - wmHeight, c.width, wmHeight);
+
+  // Siapkan teks
   ctx.fillStyle = "white";
-  ctx.font = "bold 20px Arial";
+  ctx.textBaseline = 'middle';
+
+  // Watermark kiri - Lokasi + coords
+  ctx.save();
+  ctx.font = "bold 18px Arial";
   ctx.textAlign = "left";
-  ctx.fillText(state.addr, 25, c.height - 65);
-  ctx.font = "16px Arial";
-  ctx.fillText(`${document.getElementById('overlayCoords').innerText} | ${document.getElementById('overlayTime').innerText}`, 25, c.height - 30);
-  
+  const leftTitleY = c.height - wmHeight/2 - 10;
+  const leftMetaY = c.height - wmHeight/2 + 18;
+  // potong teks lokasi bila terlalu panjang
+  const maxLeftWidth = Math.floor(c.width * 0.5) - 40;
+  let locText = String(state.addr || '');
+  if (ctx.measureText(locText).width > maxLeftWidth) {
+    while (ctx.measureText(locText + '…').width > maxLeftWidth && locText.length) locText = locText.slice(0, -1);
+    locText = locText + '…';
+  }
+  ctx.fillText(locText, 25, leftTitleY);
+  ctx.font = "14px Arial";
+  ctx.fillText(`${document.getElementById('overlayCoords').innerText} | ${document.getElementById('overlayTime').innerText}`, 25, leftMetaY);
+  ctx.restore();
+
   // Watermark kanan - Judul Kegiatan & Tanggal
+  ctx.save();
+  ctx.font = "bold 18px Arial";
+  ctx.textAlign = "right";
+  const rightTitleY = c.height - wmHeight/2 - 10;
+  const rightMetaY = c.height - wmHeight/2 + 18;
   const now = new Date();
   const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
   const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
   const dayName = dayNames[now.getDay()];
   const dateStr = `${dayName}, ${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
-  
-  ctx.fillStyle = "white";
-  ctx.font = "bold 18px Arial";
-  ctx.textAlign = "right";
-  ctx.fillText(EVENT_TITLE, c.width - 15, c.height - 68);
-  ctx.font = "15px Arial";
-  ctx.fillText(dateStr, c.width - 15, c.height - 35);
+
+  // Pastikan teks kanan tidak terpotong: max width
+  const maxRightWidth = Math.floor(c.width * 0.45) - 30;
+  let titleText = String(EVENT_TITLE || '');
+  if (ctx.measureText(titleText).width > maxRightWidth) {
+    while (ctx.measureText(titleText + '…').width > maxRightWidth && titleText.length) titleText = titleText.slice(0, -1);
+    titleText = titleText + '…';
+  }
+  ctx.fillText(titleText, c.width - 15, rightTitleY);
+  ctx.font = "14px Arial";
+  ctx.fillText(dateStr, c.width - 15, rightMetaY);
+  ctx.restore();
 
   state.img = c.toDataURL('image/jpeg', 0.8);
   v.style.display = 'none';
   document.getElementById('liveOverlay').style.display = 'none';
   c.style.display = 'block';
-  
+
   document.getElementById('captureBtn').style.display = 'none';
   document.getElementById('postCapture').style.display = 'flex';
 };
