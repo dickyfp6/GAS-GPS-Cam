@@ -1,5 +1,6 @@
 // GANTI INI DENGAN URL WEB APP KAMU
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKj5KfcDCgOD-o-6-yrV2zlbUUqQmSgxAXFKqf4UvPg-VIo_Ybqni_MAF6vGoFMurM/exec"; 
+const EVENT_TITLE = "Forum Presidium 2";
 
 let state = { lat: null, long: null, addr: "Mencari lokasi...", img: null };
 
@@ -168,7 +169,6 @@ async function loadPresenceLogs() {
             <th>ORMAWA</th>
             <th>NAMA</th>
             <th>JAM</th>
-            <th>FOTO</th>
           </tr>
         </thead>
         <tbody>
@@ -176,12 +176,11 @@ async function loadPresenceLogs() {
     
     html += logs.map(log => `
       <tr>
-        <td class="col-ormawa">${log.ormawa || '-'}</td>
+        <td class="col-ormawa clickable" onclick="window.open('${log.foto}', '_blank')" title="Klik untuk lihat foto">
+          ${log.ormawa || '-'}
+        </td>
         <td class="col-nama">${log.nama || '-'}</td>
         <td class="col-waktu">${log.waktu || '??:??'}</td>
-        <td class="col-foto">
-          <button class="btn-table-view" onclick="window.open('${log.foto}', '_blank')" title="Lihat Foto">📸</button>
-        </td>
       </tr>
     `).join('');
     
@@ -255,7 +254,7 @@ document.getElementById('ormawa').onchange = () => {
 };
 document.getElementById('ormawaCustom').oninput = checkReady;
 
-// AMBIL FOTO (Tanpa Mirror)
+// AMBIL FOTO (Preview Mirror, Hasil Normal)
 document.getElementById('captureBtn').onclick = () => {
   const v = document.getElementById('video');
   const c = document.getElementById('canvas');
@@ -264,17 +263,38 @@ document.getElementById('captureBtn').onclick = () => {
   c.width = v.videoWidth;
   c.height = v.videoHeight;
   
-  // Gambar normal tanpa mirror
+  // Un-mirror untuk hasil normal (video CSS sudah di-mirror)
+  ctx.translate(c.width, 0);
+  ctx.scale(-1, 1);
   ctx.drawImage(v, 0, 0, c.width, c.height);
+  ctx.translate(c.width, 0);
+  ctx.scale(-1, 1);
   
   // Tambah Watermark
   ctx.fillStyle = "rgba(0,0,0,0.6)";
   ctx.fillRect(0, c.height - 110, c.width, 110);
+  
+  // Watermark kiri - Lokasi
   ctx.fillStyle = "white";
-  ctx.font = "bold 26px Arial";
+  ctx.font = "bold 20px Arial";
+  ctx.textAlign = "left";
   ctx.fillText(state.addr, 25, c.height - 65);
-  ctx.font = "20px Arial";
+  ctx.font = "16px Arial";
   ctx.fillText(`${document.getElementById('overlayCoords').innerText} | ${document.getElementById('overlayTime').innerText}`, 25, c.height - 30);
+  
+  // Watermark kanan - Judul Kegiatan & Tanggal
+  const now = new Date();
+  const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const dayName = dayNames[now.getDay()];
+  const dateStr = `${dayName}, ${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+  
+  ctx.fillStyle = "white";
+  ctx.font = "bold 18px Arial";
+  ctx.textAlign = "right";
+  ctx.fillText(EVENT_TITLE, c.width - 15, c.height - 68);
+  ctx.font = "15px Arial";
+  ctx.fillText(dateStr, c.width - 15, c.height - 35);
 
   state.img = c.toDataURL('image/jpeg', 0.8);
   v.style.display = 'none';
