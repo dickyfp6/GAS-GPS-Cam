@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Camera Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Butterfly Container -->
+    <div class="butterfly-container"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <h1 class="title">GPS Camera</h1>
+                <p class="subtitle">Real-time Monitoring System</p>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="#dashboard">Dashboard</a></li>
+                    <li><a href="#cameras">Cameras</a></li>
+                    <li><a href="#settings">Settings</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Welcome to GPS Camera System</h2>
+                <p>Monitor your location in real-time with advanced GPS tracking and high-resolution imagery</p>
+                <div class="cta-buttons">
+                    <button class="btn btn-primary">Start Tracking</button>
+                    <button class="btn btn-secondary">View History</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Grid -->
+        <section class="dashboard" id="dashboard">
+            <h2 class="section-title">Live Dashboard</h2>
+            <div class="grid-container">
+                <!-- Camera Card 1 -->
+                <div class="card camera-card">
+                    <div class="card-header">
+                        <h3>Camera 1</h3>
+                        <span class="status-badge active">Active</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="camera-placeholder">
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Location:</span>
+                            <span class="value">-6.2088° S, 106.8456° E</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Last Update:</span>
+                            <span class="value">2 mins ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="card stats-card">
+                    <h3>System Statistics</h3>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Cameras</div>
+                        <div class="stat-value">4</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Active Devices</div>
+                        <div class="stat-value">3</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Data Points</div>
+                        <div class="stat-value">1,240</div>
+                    </div>
+                </div>
+
+                <!-- Camera Card 2 -->
+                <div class="card camera-card">
+                    <div class="card-header">
+                        <h3>Camera 2</h3>
+                        <span class="status-badge active">Active</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="camera-placeholder">
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Location:</span>
+                            <span class="value">-6.1750° S, 106.8270° E</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Last Update:</span>
+                            <span class="value">1 min ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cameras Section -->
+        <section class="cameras" id="cameras">
+            <h2 class="section-title">Camera Management</h2>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Last Update</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#001</td>
+                            <td>Front Gate</td>
+                            <td>Jakarta, Indonesia</td>
+                            <td><span class="badge badge-success">Online</span></td>
+                            <td>2 mins ago</td>
+                            <td><button class="btn-action">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>#002</td>
+                            <td>Parking Area</td>
+                            <td>Jakarta, Indonesia</td>
+                            <td><span class="badge badge-success">Online</span></td>
+                            <td>1 min ago</td>
+                            <td><button class="btn-action">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>#003</td>
+                            <td>Main Hall</td>
+                            <td>Jakarta, Indonesia</td>
+                            <td><span class="badge badge-warning">Idle</span></td>
+                            <td>15 mins ago</td>
+                            <td><button class="btn-action">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 GPS Camera System. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
