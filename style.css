@@ -129,7 +129,7 @@ body {
     grid-template-columns: 2fr 1.2fr;
     gap: 1.25rem;
     width: 100%;
-    max-height: 85vh; /* Limit height of the whole dashboard area */
+    align-items: stretch;
 }
 
 .header-section {
@@ -156,7 +156,9 @@ body {
     align-items: stretch;
     background: rgba(255, 255, 255, 0.95);
     transition: opacity 0.3s ease;
-    max-height: 100%; /* Match height of main panel */
+    max-height: 750px; /* Limit height to match typical main panel height */
+    height: fit-content;
+    align-self: start;
     overflow: hidden;
 }
 
