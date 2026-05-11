@@ -3,16 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Presensi Onsite 16:9</title>
+  <title>Sistem Presensi Onsite</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Butterfly Container -->
+  <div class="butterfly-container"></div>
 
-<div class="container">
-  <h2 style="margin-top: 0; color: #8B0000; text-align: center; font-size: 2rem; letter-spacing: 1px;">📸 FOTO DI SINI DULU PRES!</h2>
-  <p id="statusMsg" style="font-size: 0.85rem; color: #8B0000; text-align: center; font-weight: 500;">Menyiapkan kamera dan lokasi...</p>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo-section">
+        <h1 class="title">📸 Presensi Onsite</h1>
+        <p class="subtitle">Real-time Attendance System</p>
+      </div>
+    </div>
+  </header>
 
-  <div class="main-layout">
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <p id="statusMsg" class="status-msg">Menyiapkan kamera dan lokasi...</p>
+
+      <div class="main-layout">
     <div class="camera-section">
       <div class="camera-wrapper">
         <video id="video" autoplay playsinline muted></video>
@@ -53,10 +66,15 @@
       </div>
       
       <div id="result" class="result-box" style="display: none;"></div>
+      </div>
     </div>
-  </div>
-</div>
+  </main>
 
-<script src="script.js"></script>
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2024 Sistem Presensi Onsite. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>

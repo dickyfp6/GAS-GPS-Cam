@@ -3,6 +3,68 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKj5KfcDCgOD-o
 
 let state = { lat: null, long: null, addr: "Mencari lokasi...", img: null };
 
+// ============ Butterfly Animation System ============
+class ButterflyGenerator {
+    constructor(containerSelector = '.butterfly-container') {
+        this.container = document.querySelector(containerSelector);
+        this.butterflyEmojis = ['🦋', '🦋'];
+        this.activeButterflies = 0;
+        this.maxButterflies = 8;
+    }
+
+    createButterfly() {
+        if (this.activeButterflies >= this.maxButterflies) return;
+
+        const butterfly = document.createElement('div');
+        butterfly.className = 'butterfly';
+        butterfly.textContent = this.butterflyEmojis[Math.floor(Math.random() * this.butterflyEmojis.length)];
+
+        const startX = Math.random() * 100;
+        const startY = Math.random() * -50;
+        const duration = 15 + Math.random() * 10;
+
+        butterfly.style.cssText = `
+            left: ${startX}vw;
+            top: ${startY}vh;
+            animation: floatButter ${duration}s linear forwards;
+            animation-delay: 0s;
+            opacity: ${0.6 + Math.random() * 0.3};
+        `;
+
+        this.container.appendChild(butterfly);
+        this.activeButterflies++;
+
+        setTimeout(() => {
+            butterfly.remove();
+            this.activeButterflies--;
+        }, duration * 1000);
+    }
+
+    startAnimation(interval = 3000) {
+        this.animationInterval = setInterval(() => {
+            this.createButterfly();
+        }, interval);
+    }
+
+    stopAnimation() {
+        if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+        }
+    }
+}
+
+// ============ Ripple Animation ============
+const rippleStyle = document.createElement('style');
+rippleStyle.textContent = `
+    @keyframes ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(rippleStyle);
+
 function isLainnyaSelected() {
   return document.getElementById('ormawa').value.trim().toLowerCase() === 'lainnya';
 }
@@ -20,6 +82,28 @@ function toggleOrmawaCustomField() {
 }
 
 window.onload = () => {
+  // Initialize butterfly animation
+  const butterflyGen = new ButterflyGenerator('.butterfly-container');
+  butterflyGen.startAnimation(2500);
+
+  // Add ripple effect to buttons
+  document.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const ripple = document.createElement('span');
+      ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        transform: scale(0);
+        animation: ripple-animation 0.6s ease-out;
+      `;
+      this.style.position = 'relative';
+      this.style.overflow = 'hidden';
+      this.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+  });
+
   updateTime();
   setInterval(updateTime, 1000);
   loadOrmawa();
